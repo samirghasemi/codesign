@@ -1,6 +1,6 @@
-dp filter(in a : tc(8) ; out: r : ts(16)){
+dp filter(in a : tc(8) ;out r : tc(16)){
 
-    lookup taps : tc(8);
+    //lookup taps : tc(8);
     lookup c : tc(8) = {-1, 5, 10, 5, -1};
     
     reg i , acc , mul: tc(8);
@@ -31,14 +31,40 @@ dp filter(in a : tc(8) ; out: r : ts(16)){
         r = acc;
     }
     
+}
 
-    fsm filter_ctl(filter) {
-        initial s1;
-        state s2, s3 , s4 , s5;
-        @s1(init) -> s2;
-        @s2 if (i<4) then (maketaps) -> s2;
-                     else (maketapstomultiplier) -> s3
-        @s3 if (i<5) then (multiplier) -> s4;
-                     else(end) -> s5;
+fsm filter_ctl(filter) {
+    initial s1;
+    state s2, s3 , s4 , s5;
+    @s1(init) -> s2;
+    @s2 if (i<4) then (maketaps) -> s2;
+                 else (maketapstomultiplier) -> s3;
+    @s3 if (i<5) then (multiplier) -> s4;
+                 else(end) -> s5;
+}
+
+dp sysfilter{
+    reg a : tc(8);
+    sig r : tc(16);
+
+    use filter(a,r);
+    always { $display($cycle," ", a , " " , r);}
+    sfg go {
+        a = 20;
     }
+    sfg w8 {
+        a = 20;
+    }
+}
+
+fsm TB(sysdiv) {
+	initial s0;
+	state s1;
+	@s0 (go) -> s1;
+	@s1 (w8) -> s1;
+}
+//hardwired TB_ctl(TB){s1;}
+
+system S {
+	sysdiv;
 }
