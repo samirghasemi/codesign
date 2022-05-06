@@ -3,15 +3,23 @@ dp filter(
         out r : tc(16)
         )
 {
-    reg taps0,taps1,taps2,taps3,taps4 ;
+    reg taps0,taps1,taps2,taps3,taps4,temp :tc(8);
     
     always{
+        // taps0=2;
+        // taps1=3;
+        // taps2=4;
+        // taps3=5;
+        // taps4=a;
+
         taps4=a;
         taps3=taps4;
         taps2=taps3;
         taps1=taps2;
         taps0=taps1;
-        r = -1*taps0 + 5*taps1 + 10*t2 + 5*t3 - t4;
+
+        r = -1*taps0 + 5*taps1 + 10*taps2 + 5*taps3 - taps4;
+        $display("clk= ",$cycle ," result= " , r , " input= " , a);
     }
 }
 
