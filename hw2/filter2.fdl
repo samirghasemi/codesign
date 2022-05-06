@@ -5,39 +5,69 @@ dp filter(
 {
     lookup c : tc(8) = {-1, 5, 10, 5, -1};
     reg i,acc , mul :tc(8);
-    reg taps0 , taps1,taps2,taps3,taps4 : tc(8);
+    reg taps0 , taps1,taps2,taps3,taps4,temp : tc(8);
+    
     always{
-        $display($cycle, " ", c(1) , " " , c2(2));
+
+        r = acc;
+        $display("clk= ",$cycle ," r= " , r , " a= " , a);
     }
 
     sfg init{
-        b = c(0)+1;
-            c2(2) = 1;
+        taps0 = 1;
+        taps1 = 2;
+        taps2 = 3;
+        taps3 = 4;
+        taps4 = 5;
     }
     sfg maketaps{
+        $display("inter to maketaps");
         taps4=a;
         taps3=taps4;
         taps2=taps3;
         taps1=taps2;
+        taps0=taps1;
+        mul = 0;
     }
-    sfg maketapstomultiplier{
-        r = 0;
-    }
+
     sfg multiplier{
-        mul = taps(i) * c(i);
+        $display("inter to multiplier");
+        temp = (i==0) ? 
+            taps0
+            :
+            i==1 ?
+            taps1
+            :
+            i==2 ?
+            taps2
+            :
+            i==3 ?
+            taps3
+            :
+            taps4;
+        // $display(temp);    
+        mul = temp * c(i);
         i= i+1;
     }
 
     sfg accumulator{
+        $display("inter to accumulator " , "mul=" , mul);
         acc = mul + acc;
+    }
+
+    sfg done{
     }
 }
 
 fsm filter_ctl(filter) {
-    initial s1;
-    state s2;
-    @s1(init) -> s2;
-    @s2(init) -> s2;
+    initial s0;
+    state s1 ,s2 , s3 ,s4;
+    @s0(init) -> s1;
+    @s1(maketaps) -> s2;
+    @s2 if (i<5) then (multiplier)-> s3;
+                 else (done)-> s4;
+    @s3 (accumulator) -> s2;
+    @s4 (done) -> s4;
 }
 
 dp TB(
@@ -47,11 +77,11 @@ dp TB(
     reg b:ns(8);
     always{
         // $display($cycle, " ", a);
-        a = b;
+        a = 1;
     }
 
     sfg run{
-        b = b +1;
+        // b = b +1;
     }
 }
 
