@@ -3,12 +3,17 @@ dp filter(
         out r : ns(16)
         )
 {
+    lookup c : tc(8) = {-1, 5, 10, 5, -1};
     reg b:ns(8);
+
     always{
+        $display($cycle, " ", c(1) , " " , c2(2));
         r = b;
     }
+
     sfg init{
-        b = a+1;
+        b = c(0)+1;
+            c2(2) = 1;
     }
 }
 
@@ -25,7 +30,7 @@ dp TB(
 {
     reg b:ns(8);
     always{
-        $display($cycle, " ", a);
+        // $display($cycle, " ", a);
         a = b;
     }
 
