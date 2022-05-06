@@ -1,10 +1,13 @@
 dp filter(in a : tc(8) ;out r : tc(16)){
-
     //lookup taps : tc(8);
     lookup c : tc(8) = {-1, 5, 10, 5, -1};
     
     reg i , acc , mul: tc(8);
     
+    always {
+        r = acc
+    }
+
     sfg init{
         c = 0;
     }
@@ -27,7 +30,7 @@ dp filter(in a : tc(8) ;out r : tc(16)){
         acc = mul + acc;
     }
 
-    sfg end{
+    sfg done{
         r = acc;
     }
     
@@ -40,9 +43,10 @@ fsm filter_ctl(filter) {
     @s2 if (i<4) then (maketaps) -> s2;
                  else (maketapstomultiplier) -> s3;
     @s3 if (i<5) then (multiplier) -> s4;
-                 else(end) -> s5;
+                 else(done) -> s5;
 }
 
+dp testbench
 dp sysfilter{
     reg a : tc(8);
     sig r : tc(16);
@@ -66,5 +70,5 @@ fsm TB(sysdiv) {
 //hardwired TB_ctl(TB){s1;}
 
 system S {
-	sysdiv;
+	sysfilter;
 }
