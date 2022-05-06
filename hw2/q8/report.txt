@@ -1,0 +1,40 @@
+--------------------------------------
+The list of datapath files... 
+--------------------------------------
+   
+   datapath : filter
+   --------------------------------------
+      6 register of size 8 bit 
+      1 add operator of size 10 bit
+      1 add operator of size 11 bit
+      1 add operator of size 12 bit
+      1 assign operator of size 12 bit
+      1 assign operator of size 16 bit
+      1 mul operator of size 2 bit
+      2 mul operator of size 3 bit
+      1 mul operator of size 4 bit
+      1 sub operator of size 12 bit
+      No FSM, hardwire logic is used
+   --------------------------------------
+   
+   
+   datapath : TB
+   --------------------------------------
+      1 register of size 8 bit 
+      1 add operator of size 8 bit
+      2 assign operator of size 8 bit
+      No FSM, hardwire logic is used
+   --------------------------------------
+   
+   
+   datapath : sysfilter
+   --------------------------------------
+      No FSM, hardwire logic is used
+      datapath used: TB
+      datapath used: filter
+   --------------------------------------
+   
+--------------------------------------
+System Details
+--------------------------------------
+   datapath used: sysfilter

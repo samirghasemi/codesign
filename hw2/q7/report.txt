@@ -1,0 +1,39 @@
+--------------------------------------
+The list of datapath files... 
+--------------------------------------
+   
+   datapath : filter
+   --------------------------------------
+      9 register of size 8 bit 
+      1 LUT of size 8 bit 
+      2 add operator of size 8 bit
+      1 assign operator of size 8 bit
+      1 assign operator of size 16 bit
+      4 eq operator of size 8 bit
+      1 mul operator of size 8 bit
+      2 select operator of size 1 bit
+      1 smt operator of size 8 bit
+      FSM has 6 states, and 7 state transition
+   --------------------------------------
+   
+   
+   datapath : TB
+   --------------------------------------
+      1 register of size 8 bit 
+      1 add operator of size 8 bit
+      2 assign operator of size 8 bit
+      No FSM, hardwire logic is used
+   --------------------------------------
+   
+   
+   datapath : sysfilter
+   --------------------------------------
+      No FSM, hardwire logic is used
+      datapath used: TB
+      datapath used: filter
+   --------------------------------------
+   
+--------------------------------------
+System Details
+--------------------------------------
+   datapath used: sysfilter

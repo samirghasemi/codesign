@@ -1,0 +1,70 @@
+Symbol Table holds 68 entries
+   Id           Type              Name   Context
+    0       datapath            filter        -1
+    1        dpinput                 a         0
+    2        sigtype             (rep=tc,w=8)         1
+    3       dpoutput                 r         0
+    4        sigtype             (rep=tc,w=16)         3
+    5            reg             taps0         0
+    6            reg             taps1         0
+    7            reg             taps2         0
+    8            reg             taps3         0
+    9            reg             taps4         0
+   10            reg              temp         0
+   11        sigtype             (rep=tc,w=8)         5
+   12     sfg_always            always         0
+   13      assign_op               (L=9, R=1)        12
+   14      assign_op               (L=8, R=9)        12
+   15      assign_op               (L=7, R=8)        12
+   16      assign_op               (L=6, R=7)        12
+   17      assign_op               (L=5, R=6)        12
+   18       const_op                 1        12
+   19         neg_op               (L=18)        12
+   20         mul_op               (L=19, R=5)        12
+   21       const_op                 5        12
+   22         mul_op               (L=21, R=6)        12
+   23         add_op               (L=20, R=22)        12
+   24       const_op                10        12
+   25         mul_op               (L=24, R=7)        12
+   26         add_op               (L=23, R=25)        12
+   27       const_op                 5        12
+   28         mul_op               (L=27, R=8)        12
+   29         add_op               (L=26, R=28)        12
+   30         sub_op               (L=29, R=9)        12
+   31      assign_op               (L=3, R=30)        12
+   32        display            <void>        12
+   33        dispstr             clk=         32
+   34  display_cycle            <void>        32
+   35        dispstr          result=         32
+   36        dispvar               (V=3)        32
+   37        dispstr           input=         32
+   38        dispvar               (V=1)        32
+   39      hwire_ctl                 (noname, dp=0)        -1
+   40       sfg_exec               (D=0,S=12)         0
+   41       datapath                TB        -1
+   42       dpoutput                 a        41
+   43        sigtype             (rep=ns,w=8)        42
+   44            reg                 b        41
+   45        sigtype             (rep=ns,w=8)        44
+   46     sfg_always            always        41
+   47      assign_op               (L=42, R=44)        46
+   48            sfg               run        41
+   49       const_op                 1        48
+   50         add_op               (L=44, R=49)        48
+   51      assign_op               (L=44, R=50)        48
+   52      hwire_ctl                 (TB_ctl, dp=41)        -1
+   53       sfg_exec               (D=41,S=46)        52
+   54       sfg_exec               (D=41,S=48)        52
+   55       datapath         sysfilter        -1
+   56            sig                 a        55
+   57        sigtype             (rep=ns,w=8)        56
+   58            sig                 r        55
+   59        sigtype             (rep=ns,w=16)        58
+   60         dpc_dp               (V=41)        55
+   61        dpc_arg               (D=41, P=42)        56
+   62         dpc_dp               (V=0)        55
+   63        dpc_arg               (D=0, P=1)        56
+   64        dpc_arg               (D=0, P=3)        58
+   65      hwire_ctl                 (noname, dp=55)        -1
+   66         system                 S        -1
+   67          sysdp               (V=55)        66
