@@ -8,7 +8,6 @@ dp filter(
     reg taps0 , taps1,taps2,taps3,taps4,temp : tc(8);
     
     always{
-
         r = acc;
         $display("clk= ",$cycle ," r= " , r , " a= " , a);
     }
@@ -46,12 +45,13 @@ dp filter(
             :
             taps4;
         // $display(temp);    
-        mul = temp * c(i);
-        i= i+1;
     }
-
+    sfg mult {
+        mul = temp * c(i);
+        i= i+1;        
+    }
     sfg accumulator{
-        $display("inter to accumulator " , "mul=" , mul);
+        $display("inter to accumulator " , "mul=" , mul , "temp= " , temp , "i= " , i);
         acc = mul + acc;
     }
 
@@ -61,13 +61,14 @@ dp filter(
 
 fsm filter_ctl(filter) {
     initial s0;
-    state s1 ,s2 , s3 ,s4;
+    state s1 ,s2 , s3 ,s4,s5;
     @s0(init) -> s1;
     @s1(maketaps) -> s2;
-    @s2 if (i<5) then (multiplier)-> s3;
+    @s2 if (i<5) then (multiplier)-> s5;
                  else (done)-> s4;
     @s3 (accumulator) -> s2;
     @s4 (done) -> s4;
+    @s5 (mult) -> s3;
 }
 
 dp TB(
