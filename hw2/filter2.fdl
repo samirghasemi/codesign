@@ -4,16 +4,32 @@ dp filter(
         )
 {
     lookup c : tc(8) = {-1, 5, 10, 5, -1};
-    reg b:ns(8);
-
+    reg i,acc , mul :tc(8);
+    reg taps0 , taps1,taps2,taps3,taps4 : tc(8);
     always{
         $display($cycle, " ", c(1) , " " , c2(2));
-        r = b;
     }
 
     sfg init{
         b = c(0)+1;
             c2(2) = 1;
+    }
+    sfg maketaps{
+        taps4=a;
+        taps3=taps4;
+        taps2=taps3;
+        taps1=taps2;
+    }
+    sfg maketapstomultiplier{
+        r = 0;
+    }
+    sfg multiplier{
+        mul = taps(i) * c(i);
+        i= i+1;
+    }
+
+    sfg accumulator{
+        acc = mul + acc;
     }
 }
 
