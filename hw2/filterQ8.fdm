@@ -1,0 +1,46 @@
+dp filter(
+        in a : tc(8);
+        out r : tc(16)
+        )
+{
+    reg taps0,taps1,taps2,taps3,taps4 ;
+    
+    always{
+        taps4=a;
+        taps3=taps4;
+        taps2=taps3;
+        taps1=taps2;
+        taps0=taps1;
+        r = -1*taps0 + 5*taps1 + 10*t2 + 5*t3 - t4;
+    }
+}
+
+
+dp TB(
+    out a:ns(8)
+    )
+{
+    reg b:ns(8);
+    always{
+        a = b;
+    }
+
+    sfg run{
+        b = b + 1;
+    }
+}
+
+hardwired TB_ctl(TB){run;}
+
+dp sysfilter{
+    sig a : ns(8);
+    sig r : ns(16);
+
+    use TB(a);
+    use filter(a,r);
+}
+
+
+system S {
+	sysfilter;
+}
