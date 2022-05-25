@@ -1,6 +1,6 @@
 ipblock myarm {
 	iptype "armsystem";
-	ipparm "exec=rsa2";
+	ipparm "exec=rsa";
 }
 
 ipblock req_port_in(out data : ns(32)) {
