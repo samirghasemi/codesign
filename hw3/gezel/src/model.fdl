@@ -1,0 +1,336 @@
+ipblock myarm {
+	iptype "armsystem";
+	ipparm "exec=rsa2";
+}
+
+ipblock req_port_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000000";
+}
+
+ipblock ack_port_out(in data : ns(32)) {
+	iptype "armsystemsink";
+	ipparm "core=myarm";
+	ipparm "address=0x80000008";
+}
+
+ipblock result1_port_out(in data : ns(32)) {
+	iptype "armsystemsink";
+	ipparm "core=myarm";
+	ipparm "address=0x80000040";
+}
+
+ipblock result2_port_out(in data : ns(32)) {
+	iptype "armsystemsink";
+	ipparm "core=myarm";
+	ipparm "address=0x80000048";
+}
+
+ipblock ppp_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000018";
+}
+
+ipblock qqq_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000020";
+}
+
+ipblock eee_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000028";
+}
+
+ipblock ddd_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000030";
+}
+
+ipblock msg_in(out data : ns(32)) {
+	iptype "armsystemsource";
+	ipparm "core=myarm";
+	ipparm "address=0x80000038";
+}
+
+dp rsaSystem {
+	reg res1 : ns(32);
+	reg res2 : ns(32);
+
+	use myarm;
+
+	sig req_sig : ns(32);
+	sig ack_sig : ns(32);
+	
+	sig result1_sig : ns(32);
+	sig result2_sig : ns(32);
+
+	sig ppp_sig_in, qqq_sig_in, eee_sig_in, ddd_sig_in, msg_sig_in : ns(32);
+
+	use req_port_in(req_sig);
+	use ack_port_out(ack_sig);
+
+	use result1_port_out(result1_sig);
+	use result2_port_out(result2_sig);
+
+	use ppp_in(ppp_sig_in);
+	use qqq_in(qqq_sig_in);
+	use eee_in(eee_sig_in);
+	use ddd_in(ddd_sig_in);
+	use msg_in(msg_sig_in);
+	
+	reg current_request : ns(1);
+	reg done_reg : ns(1);
+	reg modulo_reg : ns(1);
+
+	reg x, y : ns(32);
+	reg p, q : ns(32);
+	reg e, d : ns(32);
+	reg n, z : ns(32);
+	
+	reg msg : ns(32);
+	reg cipher : ns(32);
+	reg plaint : ns(32);
+
+	always{
+		current_request = req_sig;
+		result1_sig = res1;
+		result2_sig = res2;
+	}
+
+	//////////////////////////////////
+	//// communication protocol
+	//////////////////////////////////
+
+	sfg ack0 {
+		ack_sig = 0;
+	}
+
+	sfg ack1 {
+		ack_sig = 1;
+	}
+
+	sfg ack2 {
+		ack_sig = 2;
+	}
+
+	sfg ack3 {
+		ack_sig = 3;
+	}
+
+	sfg idle {
+
+	}
+
+	//////////////////////////////////
+	//// setter (data-proxy)
+	//////////////////////////////////
+
+	sfg setter {
+
+		p = ppp_sig_in;
+		q = qqq_sig_in;
+		e = eee_sig_in; 
+		d = ddd_sig_in;
+		msg = msg_sig_in;
+
+		done_reg = 0;
+
+		$display("[HW] data_has_been_received ", $dec, " p:", p, " q:", q, " e:", e, " d:", d, " msg:", msg);
+	}
+
+	//////////////////////////////////
+	//// intermediate calculations
+	//////////////////////////////////
+
+	sfg helper0 {
+		n = p * q;
+		z = ( p - 1 ) * ( q - 1 );
+
+		$display("[HW] calculations_of_n_and_z", $dec, " n:", n, " z:", z);
+	}
+
+	sfg init1 {
+		x = e;
+		y = z;
+
+		$display("[HW] first_step", $dec, " x:", x, " y:", y);
+	}
+
+	sfg calc1 {
+		done_reg = ( (x == 0) | (y == 0) );
+		res1 = x > y ? x : y;
+		x = x > y ? x - y : x;
+		y = y >= x ? y - x : y;
+
+		$display("[HW] calculations_of_gcd", $dec, " x:", x, " y:", y);
+	}
+
+	sfg check1 {
+		done_reg = res1 == 1 ? 1 : 0 ;
+	}
+
+	sfg increment1 {
+		x = e + 1;
+		y = z;
+		e = e + 1;
+	}
+
+	sfg init2 {
+		x = d * e;
+		y = z;
+
+		$display("[HW] second_step", $dec, " x:", x, " y:", y);
+	}
+
+	sfg calc2 {
+		done_reg = x < y ? 1 : 0;
+		x = x >= y ? x - y : x;
+
+		$display("[HW] calculations_of_ddd", $dec, " x:", x);
+	}
+
+	sfg check2 {
+		done_reg = x == 1 ? 1 : 0 ; 
+	}
+
+	sfg increment2 {
+		x = ( d + 1 ) * e;
+		y = z;
+		d = d + 1;
+	}
+
+	//////////////////////////////////
+	//// encryption
+	//////////////////////////////////
+
+	sfg init3 {
+		x = 1;
+		y = e - 1;
+	}
+
+	sfg encrypter {
+		done_reg = y == 0 ? 1 : 0;
+		x = x * msg;
+		y = y - 1;
+
+		$display("[HW] doing_encryption", $dec, " x:", x, " y:", y);
+	}
+
+	sfg moduloLoop {
+		x = x >= n ? x - n : x;
+		modulo_reg = x > n ? 0 : 1;
+	}
+
+	sfg setCipherText {
+		cipher = x;
+	}
+
+	sfg sendEncrypted {
+		res1 = cipher;
+	}
+
+	//////////////////////////////////
+	//// decryption
+	//////////////////////////////////
+
+	sfg init4 {
+		x = 1;
+		y = d-1;
+		modulo_reg = 0;
+		done_reg = 0;
+	}
+
+	sfg decrypter {
+		done_reg = y == 0 ? 1 : 0;
+		x = x * cipher;
+		y = y - 1;
+
+		$display("[HW] doing_decryption", $dec, " x:", x, " y:", y);
+	}
+
+	sfg setPlainText {
+		plaint = x;
+	}
+
+	sfg sendDecrypted{
+		res2 = plaint; 
+	}
+}
+
+fsm rsaController(rsaSystem){
+	
+	initial s1;
+	state 	s2, 	s3, 	s4, 	s5;
+	state 	s6, 	s7, 	s8, 	s9, 	s10;
+	state 	s11, 	s12, 	s13,	s14,	s15;
+	state 	s16, 	s17, 	s18, 	s19, 	s20;
+	state 	s21, 	s22, 	s23, 	s24, 	s25;
+	state 	s26, 	s27;
+
+	@s1 if(current_request) then (setter, ack2) -> s3;
+	else (ack1) ->s1;
+
+	@s3 (helper0, ack2) -> s5;
+	
+	@s5 (init1, ack2) -> s6;
+
+	@s6 (calc1, ack2) -> s7;
+
+	@s7 if(done_reg) then (check1, ack2) -> s8;
+	else (calc1, ack2) -> s7;
+
+	@s8 if(~done_reg) then (increment1, ack2) -> s6;
+	else (idle, ack2) -> s10;
+
+	@s10 (init2, ack2) -> s11;
+
+	@s11 (calc2, ack2) -> s12;
+
+	@s12 if(done_reg) then (check2, ack2) -> s13;
+	else (calc2, ack2) -> s12;
+
+	@s13 if(~done_reg) then (increment2, ack2) -> s11;
+	else (idle, ack2) -> s14;
+
+	@s14 (idle, ack2) -> s15;
+
+	@s15 (init3, ack2) -> s16;
+
+	@s16 (encrypter, ack2) -> s17;
+
+	@s17 (moduloLoop, ack2) -> s18;
+
+	@s18 if(modulo_reg) then (idle, ack2) -> s19;
+	else (idle, ack2) -> s17;
+
+	@s19 if(done_reg) then (setCipherText, ack2) -> s20;
+	else (idle, ack2) -> s16;
+
+	@s20 (sendEncrypted, ack2) -> s21;
+	
+	@s21 (init4, ack2) -> s22;
+
+	@s22 (decrypter, ack2) -> s23;
+
+	@s23 (moduloLoop, ack2) -> s24;
+
+	@s24 if(modulo_reg) then (idle, ack2) -> s25;
+	else (idle, ack2) -> s23;
+
+	@s25  if(done_reg) then (setPlainText, ack2) -> s26;
+	else (idle, ack2) -> s22;
+	
+	@s26 (ack3, sendDecrypted) -> s27;
+
+	@s27 (ack3, idle) -> s27;
+
+}
+
+system S {
+	rsaSystem;
+}
