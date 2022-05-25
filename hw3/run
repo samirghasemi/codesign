@@ -1,2 +1,2 @@
-arm-linux-gcc -static rsa.c -o rsa
+arm-linux-gcc -static main.c -o main
 gplatform model.fdl
