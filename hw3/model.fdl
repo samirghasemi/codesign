@@ -90,9 +90,6 @@ dp RSA_encryptor_decryptor {
 		decrypted_sig = decrypted_reg;
 	}
 
-
-
-
 	//// set acknowledges signals
 
 	sfg ack1 {
@@ -107,9 +104,6 @@ dp RSA_encryptor_decryptor {
 		ack_sig = 3;
 	}
 
-
-
-
 	//// read data from inputs
 
 	sfg data_reader {
@@ -119,59 +113,50 @@ dp RSA_encryptor_decryptor {
 		d = d_sig;
 		message = m_sig;
 		done_reg = 0;
-		$display("HARDWARE----> get data from software ", $dec, " p:", p, " q:", q, " e:", e, " d:", d, " msg:", message);
+		$display("HARDWARE----> get data from software ", " p:", p, " q:", q, " e:", e, " d:", d, " msg:", message);
 	}
 
 	//// calculations
-
 	sfg calculate_n_and_z {
 		n = p * q;
 		z = ( p - 1 ) * ( q - 1 );
 
-		$display("HARDWARE----> calculate n and z", $dec, " n:", n, " z:", z);
+		$display("HARDWARE----> calculate n and z", " n:", n, " z:", z);
 		$display($dec);
 	}
-
 	sfg initialize_for_start {
 		x = e;
 		y = z;
 	}
-
 	sfg calculate_gcd {
 		done_reg = ( (x == 0) | (y == 0) );
 		encrypted_reg = x > y ? x : y;
 		x = x > y ? x - y : x;
 		y = y >= x ? y - x : y;
 
-		$display("HARDWARE----> calculate gcd", $dec, " x:", x, " y:", y);
+		$display("HARDWARE----> calculate gcd", " x:", x, " y:", y);
 	}
-
 	sfg check_encrypted_reg {
 		done_reg = encrypted_reg == 1 ? 1 : 0 ;
 	}
-
 	sfg increment1 {
 		x = e + 1;
 		y = z;
 		e = e + 1;
 	}
-
 	sfg initialize_for_after_start {
 		x = d * e;
 		y = z;
 	}
-
 	sfg calculate_x {
 		done_reg = x < y ? 1 : 0;
 		x = x >= y ? x - y : x;
 
-		$display("HARDWARE----> calculate x", $dec, " x:", x);
+		$display("HARDWARE----> calculate x", " x:", x);
 	}
-
 	sfg check_done_reg {
 		done_reg = x == 1 ? 1 : 0 ; 
 	}
-
 	sfg increment2 {
 		x = ( d + 1 ) * e;
 		y = z;
@@ -190,7 +175,7 @@ dp RSA_encryptor_decryptor {
 		x = x * message;
 		y = y - 1;
 
-		$display("HARDWARE----> encryption", $dec, " x:", x, " y:", y);
+		$display("HARDWARE----> encryption", " x:", x, " y:", y);
 	}
 
 	sfg loop_for_module {
@@ -221,7 +206,7 @@ dp RSA_encryptor_decryptor {
 		x = x * cipher;
 		y = y - 1;
 
-		$display("HARDWARE----> doing_decryption", $dec, " x:", x, " y:", y);
+		$display("HARDWARE----> doing_decryption", " x:", x, " y:", y);
 	}
 
 	sfg set_plaint_reg {
@@ -234,67 +219,41 @@ dp RSA_encryptor_decryptor {
 }
 
 fsm rsaController(RSA_encryptor_decryptor){
-	
 	initial s1;
 	state 	s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14, s15, s16, s17, s18, s19, s20, s21, s22, s23, s24;
-
 	@s1 if(current_request_reg) then (data_reader, ack2) -> s2;
 	else (ack1) ->s1;
-
 	@s2 (calculate_n_and_z, ack2) -> s3;
-	
 	@s3 (initialize_for_start, ack2) -> s4;
-
 	@s4 (calculate_gcd, ack2) -> s5;
-
 	@s5 if(done_reg) then (check_encrypted_reg, ack2) -> s6;
 	else (calculate_gcd, ack2) -> s5;
-
 	@s6 if(~done_reg) then (increment1, ack2) -> s4;
 	else (ack2) -> s7;
-
 	@s7 (initialize_for_after_start, ack2) -> s8;
-
 	@s8 (calculate_x, ack2) -> s9;
-
 	@s9 if(done_reg) then (check_done_reg, ack2) -> s10;
 	else (calculate_x, ack2) -> s9;
-
 	@s10 if(~done_reg) then (increment2, ack2) -> s8;
 	else (ack2) -> s11;
-
 	@s11 (ack2) -> s12;
-
 	@s12 (initialize_for_encryption, ack2) -> s13;
-
 	@s13 (encrypter, ack2) -> s14;
-
 	@s14 (loop_for_module, ack2) -> s15;
-
 	@s15 if(modulo_reg) then (ack2) -> s16;
 	else (ack2) -> s14;
-
 	@s16 if(done_reg) then (set_cipher_reg, ack2) -> s17;
 	else (ack2) -> s13;
-
 	@s17 (set_encrypted_reg, ack2) -> s18;
-	
 	@s18 (initialize_for_decryption, ack2) -> s19;
-
 	@s19 (decrypter, ack2) -> s20;
-
 	@s20 (loop_for_module, ack2) -> s21;
-
 	@s21 if(modulo_reg) then (ack2) -> s22;
 	else (ack2) -> s20;
-
 	@s22  if(done_reg) then (set_plaint_reg, ack2) -> s23;
 	else (ack2) -> s19;
-	
 	@s23 (ack3, set_decrypted_reg) -> s24;
-
 	@s24 (ack3) -> s24;
-
 }
 
 system S {
