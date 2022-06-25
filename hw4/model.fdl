@@ -379,6 +379,8 @@ dp fft_dp{
         o5_reg = x5_reg;
         o6_reg = x6_reg;
         o7_reg = x7_reg;
+        $display("X OUTPUT:");
+
         $display("o0=", o0_reg, " o1=", o1_reg, " o2=", o2_reg, " o3=", o3_reg, " o4=", o4_reg, " o5=", o5_reg, " o6=" ,o6_reg, " o7=", o7_reg);
 
 
@@ -393,6 +395,8 @@ dp fft_dp{
         o5_reg = y5_reg;
         o6_reg = y6_reg;
         o7_reg = y7_reg;
+        $display("Y OUTPUT:");
+
         $display("o0=", o0_reg, " o1=", o1_reg, " o2=", o2_reg, " o3=", o3_reg, " o4=", o4_reg, " o5=", o5_reg, " o6=" ,o6_reg, " o7=", o7_reg);
     }
 

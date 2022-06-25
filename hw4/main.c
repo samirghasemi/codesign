@@ -25,17 +25,14 @@ signed int double_to_twoscomplement(double number){
     return (int) (number *64);
 }
 
-double twoscomplement_to_double(int number){
-    int neg = number & 0x32768;
-    number = number & 65535;
-    if (number){
-        int x = number - 1;
-        x = ~ x;
-        number = x ;
-        return ((double)number) / 64 * -1;
-    }else{
-        return ((double)number) / 64;
-    }
+float twoscomplement_to_double(int number){
+    double b =  number;
+    int neg = 0;
+    if (number<0) {neg=-1;}
+    else {neg=1;}
+    float temp = ((float)number)/64.0;
+    printf("number = [%f]\n",temp);
+    return temp;
 }
 
 void req0() {
@@ -194,28 +191,28 @@ int main(){
     await8();
 
     await9();
-    double x0 = twoscomplement_to_double(*output_0);
-    double x1 = twoscomplement_to_double(*output_1);
-    double x2 = twoscomplement_to_double(*output_2);
-    double x3 = twoscomplement_to_double(*output_3);
-    double x4 = twoscomplement_to_double(*output_4);
-    double x5 = twoscomplement_to_double(*output_5);
-    double x6 = twoscomplement_to_double(*output_6);
-    double x7 = twoscomplement_to_double(*output_7);
+    float x0 = twoscomplement_to_double(*output_0);
+    float x1 = twoscomplement_to_double(*output_1);
+    float x2 = twoscomplement_to_double(*output_2);
+    float x3 = twoscomplement_to_double(*output_3);
+    float x4 = twoscomplement_to_double(*output_4);
+    float x5 = twoscomplement_to_double(*output_5);
+    float x6 = twoscomplement_to_double(*output_6);
+    float x7 = twoscomplement_to_double(*output_7);
     req0();
     await10();
-    double y0 = twoscomplement_to_double(*output_0);
-    double y1 = twoscomplement_to_double(*output_1);
-    double y2 = twoscomplement_to_double(*output_2);
-    double y3 = twoscomplement_to_double(*output_3);
-    double y4 = twoscomplement_to_double(*output_4);
-    double y5 = twoscomplement_to_double(*output_5);
-    double y6 = twoscomplement_to_double(*output_6);
-    double y7 = twoscomplement_to_double(*output_7);
+    floa y0 = twoscomplement_to_double(*output_0);
+    float y1 = twoscomplement_to_double(*output_1);
+    float y2 = twoscomplement_to_double(*output_2);
+    float y3 = twoscomplement_to_double(*output_3);
+    float y4 = twoscomplement_to_double(*output_4);
+    float y5 = twoscomplement_to_double(*output_5);
+    float y6 = twoscomplement_to_double(*output_6);
+    float y7 = twoscomplement_to_double(*output_7);
     
 
-    printf("X = [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n",x0,x1,x2,x3,x4,x5,x6,x7);
-    printf("Y = [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n",y0,y1,y2,y3,y4,y5,y6,y7);
+    // printf("X = [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n",x0,x1,x2,x3,x4,x5,x6,x7);
+    // printf("Y = [%d, %d, %d, %d, %d, %d, %d, %d, %d, %d]\n",y0,y1,y2,y3,y4,y5,y6,y7);
 
     req1();
     // req1();
