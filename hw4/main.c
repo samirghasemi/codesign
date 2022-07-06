@@ -201,7 +201,7 @@ int main(){
     float x7 = twoscomplement_to_double(*output_7);
     req0();
     await10();
-    floa y0 = twoscomplement_to_double(*output_0);
+    float y0 = twoscomplement_to_double(*output_0);
     float y1 = twoscomplement_to_double(*output_1);
     float y2 = twoscomplement_to_double(*output_2);
     float y3 = twoscomplement_to_double(*output_3);
